@@ -1,0 +1,24 @@
+{
+  "name": "flow-api",
+  "version": "1.0.0",
+  "description": "An api to handle all save and load operations for flow-ui",
+  "main": "app/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hitesh-IDK/flow-api.git"
+  },
+  "keywords": [
+    "flow",
+    "api",
+    "node"
+  ],
+  "author": "HiteshIDK",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Hitesh-IDK/flow-api/issues"
+  },
+  "homepage": "https://github.com/Hitesh-IDK/flow-api#readme"
+}
