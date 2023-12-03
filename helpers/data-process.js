@@ -12,8 +12,6 @@ export const OrderFlows = (flows) => {
     }
   }
 
-  console.log(sortedFlows);
-
   return sortedFlows;
 };
 
@@ -27,7 +25,6 @@ export const TrimFlows = (flows) => {
     trimmedFlows.push(flowItem);
   }
 
-  console.log(trimmedFlows);
   return trimmedFlows;
 };
 
@@ -42,7 +39,6 @@ export const PrepareFlows = (flows) => {
     const flowItem = flows[index];
     preparedFlows.push(flowItem);
 
-    console.log(index, flows.length);
     if (Number(index) + 1 === flows.length) preparedFlows.push(endflow);
   }
 

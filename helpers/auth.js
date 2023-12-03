@@ -17,8 +17,6 @@ export const isAllowedToSignIn = async (email, password) => {
 export const isAllowedToSignUp = async (email) => {
   const client = await connectClient();
 
-  console.log(email);
-
   const dbFetch = await client
     .db()
     .collection("users")
@@ -26,4 +24,28 @@ export const isAllowedToSignUp = async (email) => {
 
   client.close();
   return !dbFetch;
+};
+
+export const isAllowedToUpdate = async (email, oldPassword, newPassword) => {
+  const client = await connectClient();
+
+  const user = await client.db().collection("users").findOne({ email });
+
+  if (!user)
+    return { isAllowed: false, message: "Email not found in the database" };
+
+  if (!(await bcrypt.compare(oldPassword, user.password)))
+    return {
+      isAllowed: false,
+      message: "Old password does not match, check again",
+    };
+
+  if (await bcrypt.compare(newPassword, user.password))
+    return {
+      isAllowed: false,
+      message: "New password cannot be the same as the old one",
+    };
+
+  client.close();
+  return { isAllowed: true, message: "" };
 };

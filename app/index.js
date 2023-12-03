@@ -1,11 +1,16 @@
 import connectToClient from "../helpers/connect-client.js";
 import Express from "express";
-import { isAllowedToSignIn, isAllowedToSignUp } from "../helpers/auth.js";
+import {
+  isAllowedToSignIn,
+  isAllowedToSignUp,
+  isAllowedToUpdate,
+} from "../helpers/auth.js";
 import {
   TrimFlows,
   OrderFlows,
   PrepareFlows,
 } from "../helpers/data-process.js";
+import bcrypt, { genSalt } from "bcrypt";
 
 const app = Express();
 
@@ -85,6 +90,43 @@ app.get("/api/auth", (req, res) => {
   res.status(404).json({ message: "route not implemented" });
 });
 
+app.patch("/api/auth/credentials/update", async (req, res) => {
+  const { email, oldPassword, newPassword } = req.body;
+
+  const { isAllowed, message } = await isAllowedToUpdate(
+    email,
+    oldPassword,
+    newPassword
+  );
+
+  if (!isAllowed) {
+    res.status(401).json({ message });
+    return;
+  }
+
+  const client = await connectToClient();
+  const hashedPassword = await bcrypt.hash(newPassword, await genSalt());
+
+  const updateRes = await client
+    .db()
+    .collection("users")
+    .updateOne(
+      { email },
+      {
+        $set: {
+          password: hashedPassword,
+        },
+        $currentDate: {
+          lastUpdated: true,
+        },
+      }
+    );
+
+  console.log(updateRes);
+
+  res.status(200).json({ message: "Hey" });
+});
+
 app.post("/api/auth/credentials", async (req, res) => {
   console.log("Start");
   const data = req.body;
@@ -129,7 +171,6 @@ app.post("/api/auth/credentials", async (req, res) => {
 
 app.post("/api/auth/google", (req, res) => {
   const data = req.body;
-  console.log(data);
 });
 
 const port = 8666;
