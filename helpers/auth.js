@@ -1,4 +1,4 @@
-import connectClient from "../helpers/connect-client.js";
+import connectClient from "./connect-client.js";
 import bcrypt from "bcrypt";
 
 export const isAllowedToSignIn = async (email, password) => {

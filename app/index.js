@@ -1,29 +1,18 @@
 import connectToClient from "../helpers/connect-client.js";
 import Express from "express";
-import { isAllowedToSignIn, isAllowedToSignUp } from "./auth.js";
+import { isAllowedToSignIn, isAllowedToSignUp } from "../helpers/auth.js";
+import {
+  TrimFlows,
+  OrderFlows,
+  PrepareFlows,
+} from "../helpers/data-process.js";
 
 const app = Express();
 
 app.use(Express.json());
 
-const orderFlows = (flows) => {
-  let counter = 0;
-  const sortedFlows = [];
-
-  for (const _ in flows) {
-    for (const index in flows) {
-      if (flows[index].id === counter) {
-        sortedFlows.push(flows[index]);
-        counter++;
-        break;
-      }
-    }
-  }
-
-  return sortedFlows;
-};
-
 app.get("/api/flows", (req, res) => {
+  console.log("Req recieved");
   const sendFlows = async () => {
     let client = "";
 
@@ -35,11 +24,12 @@ app.get("/api/flows", (req, res) => {
       });
       return;
     }
-    const flows1 = orderFlows(
-      await client.db().collection("flows1").find().toArray()
+
+    const flows1 = PrepareFlows(
+      OrderFlows(await client.db().collection("flows1").find().toArray())
     );
-    const flows2 = orderFlows(
-      await client.db().collection("flows2").find().toArray()
+    const flows2 = PrepareFlows(
+      OrderFlows(await client.db().collection("flows2").find().toArray())
     );
 
     res.status(200).json({
@@ -55,8 +45,8 @@ app.get("/api/flows", (req, res) => {
 app.post("/api/flows", (req, res) => {
   const data = req.body;
 
-  const flow1 = data.flow1;
-  const flow2 = data.flow2;
+  const flow1 = TrimFlows(data.flow1);
+  const flow2 = TrimFlows(data.flow2);
 
   const replaceFlows = async () => {
     let client = "";
@@ -98,7 +88,6 @@ app.get("/api/auth", (req, res) => {
 app.post("/api/auth/credentials", async (req, res) => {
   console.log("Start");
   const data = req.body;
-  console.log(data);
 
   if (data.action === "signIn") {
     if (!(await isAllowedToSignIn(data.email, data.password))) {
