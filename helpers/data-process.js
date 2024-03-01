@@ -30,8 +30,8 @@ export const TrimFlows = (flows) => {
 
 export const PrepareFlows = (flows) => {
   const preparedFlows = [];
-  const [startFlow, endflow] = HeaderFlows();
-  endflow.id = flows.length + 1;
+  const [startFlow, endFlow] = HeaderFlows();
+  endFlow.id = flows.length + 1;
 
   preparedFlows.push(startFlow);
 
@@ -39,8 +39,10 @@ export const PrepareFlows = (flows) => {
     const flowItem = flows[index];
     preparedFlows.push(flowItem);
 
-    if (Number(index) + 1 === flows.length) preparedFlows.push(endflow);
+    if (Number(index) + 1 === flows.length) preparedFlows.push(endFlow);
   }
+
+  if (preparedFlows.length < 2) preparedFlows.push(endFlow);
 
   return preparedFlows;
 };

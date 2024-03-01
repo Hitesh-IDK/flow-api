@@ -16,6 +16,10 @@ const app = Express();
 
 app.use(Express.json());
 
+app.get("/", (req, res) => {
+  res.status(200).json("Api is up and running..");
+});
+
 app.get("/api/flows", (req, res) => {
   console.log("Req recieved");
   const sendFlows = async () => {
@@ -68,13 +72,19 @@ app.post("/api/flows", (req, res) => {
     const flow2Delete = await client.db().collection("flows2").deleteMany({});
 
     const flowsDb1 =
-      flow1Delete.acknowledged &&
+      flow1.length > 0 &&
       (await client.db().collection("flows1").insertMany(flow1));
     const flowsDb2 =
-      flow2Delete.acknowledged &&
+      flow2.length > 0 &&
       (await client.db().collection("flows2").insertMany(flow2));
 
-    if (flowsDb1.acknowledged && flowsDb2.acknowledged) {
+    if (
+      flow1.length > 0
+        ? flowsDb1.acknowledged
+        : true && flow2.length > 0
+        ? flowsDb2.acknowledged
+        : true
+    ) {
       res.status(201).json({ message: "Save successfull" });
     } else {
       res.status(500).json({ message: "Server has into some kind of issue" });
@@ -87,7 +97,7 @@ app.post("/api/flows", (req, res) => {
 });
 
 app.get("/api/auth", (req, res) => {
-  res.status(404).json({ message: "route not implemented" });
+  res.status(200).json({ message: "Server is up and running" });
 });
 
 app.patch("/api/auth/credentials/update", async (req, res) => {
